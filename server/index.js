@@ -37,8 +37,28 @@ async function run() {
       res.send(result);
     });
     
+    app.get(`/users/:id`,async(req,res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const user = await userCollection.findOne(query)
+      res.send(user)
+    })
+    app.put(`/users/:id`,async (req,res)=>{
+      const id = req.params.id;
+      const user = req.body;
+      console.log(user);
+      const filter = {_id: new ObjectId(id)}
+      const options = {upsert: true}
+      const updateUser = {
+        $set: {
+          name: user.name,
+          email: user.email,
+        }
+      }
 
-
+      const result = await userCollection.updateOne(filter,updateUser,options);
+      res.send(result)
+    })
     // create new user
     app.post(`/users`, async (req, res) => {
       const user = req.body;
